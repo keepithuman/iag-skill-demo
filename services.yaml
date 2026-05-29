@@ -33,7 +33,7 @@ decorators:
 
 repositories:
   - name: iag-skill-demo
-    url: git@github.com:keepithuman/iag-skill-demo.git
+    url: https://github.com/keepithuman/iag-skill-demo.git
     reference: main
 
 services:
