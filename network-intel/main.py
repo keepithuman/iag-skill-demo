@@ -181,8 +181,9 @@ def check_tls(host, timeout):
 def main():
     args = parse_args()
     target = args.target.strip()
-    timeout = max(1, min(30, int(args.timeout)))
-    checks = [c.strip().lower() for c in args.checks.split(",") if c.strip()]
+    timeout = max(1, min(30, int(args.timeout or "5")))
+    checks_raw = args.checks.strip() if args.checks and args.checks.strip() else "dns,ping,ports,geo,tls"
+    checks = [c.strip().lower() for c in checks_raw.split(",") if c.strip()]
 
     report = {
         "target": target,
