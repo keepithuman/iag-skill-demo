@@ -41,6 +41,43 @@ decorators:
           default: "5"
       additionalProperties: false
 
+  - name: echo
+    schema:
+      $id: echo
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        argument_list:
+          type: string
+          description: "Comma-separated arguments to echo back"
+          examples:
+            - "zzz,aaa"
+            - "hello,world"
+      additionalProperties: false
+
+  - name: ip-mask-to-cidr
+    schema:
+      $id: ip-mask-to-cidr
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      required:
+        - ipAddress
+        - netmask
+      properties:
+        ipAddress:
+          type: string
+          description: "IP address (host or network)"
+          examples:
+            - "2.2.2.0"
+            - "10.0.0.0"
+        netmask:
+          type: string
+          description: "Dotted-decimal subnet mask"
+          examples:
+            - "255.255.255.0"
+            - "255.255.0.0"
+      additionalProperties: false
+
   - name: subnet-calc
     schema:
       $id: subnet-calc
@@ -87,6 +124,38 @@ services:
     tags:
       - network
       - discovery
+    runtime:
+      req-file: requirements.txt
+
+  - name: echo
+    type: python-script
+    description: >
+      IAG5 equivalent of the IAG4 echo.sh service. Accepts a comma-separated
+      argument_list and echoes them back as structured JSON.
+    filename: main.py
+    working-directory: network/echo
+    repository: iag-skill-demo
+    decorator: echo
+    tags:
+      - network
+      - utility
+      - iag5-migration
+    runtime:
+      req-file: requirements.txt
+
+  - name: ip-mask-to-cidr
+    type: python-script
+    description: >
+      IAG5 equivalent of the IAG4 ipMaskToCIDR.py service. Takes an IP address
+      and dotted-decimal netmask, returns CIDR notation and full subnet details.
+    filename: main.py
+    working-directory: network/ip-mask-to-cidr
+    repository: iag-skill-demo
+    decorator: ip-mask-to-cidr
+    tags:
+      - network
+      - ipam
+      - iag5-migration
     runtime:
       req-file: requirements.txt
 

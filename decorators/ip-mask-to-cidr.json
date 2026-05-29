@@ -1,0 +1,19 @@
+{
+  "$id": "ip-mask-to-cidr",
+  "$schema": "https://json-schema.org/draft/202012/schema",
+  "type": "object",
+  "required": ["ipAddress", "netmask"],
+  "properties": {
+    "ipAddress": {
+      "type": "string",
+      "description": "IP address (host or network)",
+      "examples": ["2.2.2.0", "10.0.0.0"]
+    },
+    "netmask": {
+      "type": "string",
+      "description": "Dotted-decimal subnet mask",
+      "examples": ["255.255.255.0", "255.255.0.0"]
+    }
+  },
+  "additionalProperties": false
+}

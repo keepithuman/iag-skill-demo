@@ -1,0 +1,13 @@
+{
+  "$id": "echo",
+  "$schema": "https://json-schema.org/draft/202012/schema",
+  "type": "object",
+  "properties": {
+    "argument_list": {
+      "type": "string",
+      "description": "Comma-separated arguments to echo back",
+      "examples": ["zzz,aaa", "hello,world"]
+    }
+  },
+  "additionalProperties": false
+}
