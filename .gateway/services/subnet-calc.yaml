@@ -1,0 +1,52 @@
+decorators:
+  - name: subnet-calc
+    schema:
+      $id: subnet-calc
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      required:
+        - cidr
+      properties:
+        cidr:
+          type: string
+          description: "Network in CIDR notation"
+          examples:
+            - "10.0.0.0/24"
+            - "192.168.1.128/26"
+            - "172.16.0.0/12"
+        split_prefix:
+          type: string
+          description: "Split the network into subnets of this prefix length (optional)"
+          examples:
+            - "26"
+            - "28"
+            - "30"
+        include_hosts:
+          type: string
+          description: "Include all host IPs in output — only safe for small networks (/28 or smaller)"
+          enum: ["true", "false"]
+          default: "false"
+      additionalProperties: false
+
+repositories:
+  - name: iag-skill-demo
+    url: https://github.com/keepithuman/iag-skill-demo.git
+    reference: main
+
+services:
+  - name: subnet-calc
+    type: python-script
+    description: >
+      Full subnet breakdown for any IPv4 or IPv6 CIDR: network/broadcast
+      addresses, host range, usable count, netmask, wildcard, IP class,
+      supernet, and optional subnet split. Pure stdlib — no dependencies.
+    filename: main.py
+    working-directory: subnet-calc
+    repository: iag-skill-demo
+    decorator: subnet-calc
+    tags:
+      - network
+      - ipam
+      - demo
+    runtime:
+      req-file: requirements.txt
