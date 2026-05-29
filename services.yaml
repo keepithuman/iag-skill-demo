@@ -1,0 +1,106 @@
+# Master service file — all decorators, repositories, and services are defined here.
+# Code lives in domain folders: network/, cloud/, etc.
+# Decorator schemas are mirrored as JSON in decorators/ for reference.
+#
+# To import:
+#   iagctl --profile local db import services.yaml
+# To update (overwrite existing):
+#   iagctl --profile local db import services.yaml --force
+
+repositories:
+  - name: iag-skill-demo
+    url: https://github.com/keepithuman/iag-skill-demo.git
+    reference: main
+
+# ---------------------------------------------------------------------------
+# Decorators — input schemas for each service
+# Source-of-truth JSON copies live in decorators/
+# ---------------------------------------------------------------------------
+decorators:
+  - name: network-intel
+    schema:
+      $id: network-intel
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      required:
+        - target
+      properties:
+        target:
+          type: string
+          description: "Hostname or IP address to inspect"
+          examples:
+            - "google.com"
+            - "8.8.8.8"
+        checks:
+          type: string
+          description: "Comma-separated checks: dns,ping,ports,geo,tls"
+          default: "dns,ping,ports,geo,tls"
+        timeout:
+          type: string
+          description: "Per-check timeout in seconds (1-30)"
+          default: "5"
+      additionalProperties: false
+
+  - name: subnet-calc
+    schema:
+      $id: subnet-calc
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      required:
+        - cidr
+      properties:
+        cidr:
+          type: string
+          description: "Network in CIDR notation"
+          examples:
+            - "10.0.0.0/24"
+            - "192.168.1.128/26"
+        split_prefix:
+          type: string
+          description: "Split the network into subnets of this prefix length"
+          examples:
+            - "26"
+            - "28"
+        include_hosts:
+          type: string
+          description: "Include all host IPs — only safe for /28 or smaller"
+          enum: ["true", "false"]
+          default: "false"
+      additionalProperties: false
+
+# ---------------------------------------------------------------------------
+# Services
+# ---------------------------------------------------------------------------
+services:
+
+  # --- network domain -------------------------------------------------------
+
+  - name: network-intel
+    type: python-script
+    description: >
+      DNS resolution, ping reachability, port scan, geolocation, and TLS
+      certificate inspection for any hostname or IP.
+    filename: main.py
+    working-directory: network/network-intel
+    repository: iag-skill-demo
+    decorator: network-intel
+    tags:
+      - network
+      - discovery
+    runtime:
+      req-file: requirements.txt
+
+  - name: subnet-calc
+    type: python-script
+    description: >
+      Full subnet breakdown for any IPv4 or IPv6 CIDR: host range, netmask,
+      wildcard, IP class, supernet, and optional subnet split.
+    filename: main.py
+    working-directory: network/subnet-calc
+    repository: iag-skill-demo
+    decorator: subnet-calc
+    tags:
+      - network
+      - ipam
+    runtime:
+      req-file: requirements.txt

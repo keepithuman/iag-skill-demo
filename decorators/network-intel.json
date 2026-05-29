@@ -1,0 +1,26 @@
+{
+  "$id": "network-intel",
+  "$schema": "https://json-schema.org/draft/202012/schema",
+  "type": "object",
+  "required": ["target"],
+  "properties": {
+    "target": {
+      "type": "string",
+      "description": "Hostname or IP address to inspect",
+      "examples": ["google.com", "8.8.8.8", "github.com"]
+    },
+    "checks": {
+      "type": "string",
+      "description": "Comma-separated checks to run: dns,ping,ports,geo,tls",
+      "default": "dns,ping,ports,geo,tls",
+      "examples": ["dns,ping,ports,geo,tls", "dns,ping", "ports,tls"]
+    },
+    "timeout": {
+      "type": "string",
+      "description": "Per-check timeout in seconds (1-30)",
+      "default": "5",
+      "examples": ["5", "10"]
+    }
+  },
+  "additionalProperties": false
+}
